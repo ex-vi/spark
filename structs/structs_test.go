@@ -23,7 +23,7 @@ func TestMapNonStruct(t *testing.T) {
 
 func TestStructIndexes(t *testing.T) {
 	type C struct {
-		smth  int
+		smth  int //nolint
 		Props map[string]interface{}
 	}
 
@@ -686,7 +686,7 @@ type Animal struct {
 }
 
 type Dog struct {
-	Animal *Animal `json:"animal,string"`
+	Animal *Animal `json:"animal,string"` //nolint
 }
 
 func TestNonStringerTagWithStringOption(t *testing.T) {
