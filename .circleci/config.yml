@@ -1,0 +1,53 @@
+version: 2.1
+
+executors:
+  go-container:
+    docker:
+      - image: circleci/golang:1.17
+  go-lint:
+    docker:
+      - image: golangci/golangci-lint:v1.43-alpine
+
+jobs:
+  unit-tests:
+    executor: go-container
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run:
+          name: Install Dependencies
+          command: go mod download
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+      - run:
+          name: Go Tests With Coverage
+          command: |
+            go test ./... -coverprofile cover.out
+            COVERAGE=$(go tool cover -func cover.out | grep total | awk '{print substr($3, 1, length($3) - 1)}')
+            echo "Total code coverage is: $COVERAGE%"
+          no_output_timeout: 2m
+
+  lint:
+    executor: go-lint
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: "Go Lint"
+          command: golangci-lint run ./...
+          no_output_timeout: 2m
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
+workflows:
+  Test-workflow:
+    jobs:
+      - unit-tests
+      - lint
