@@ -25,4 +25,4 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ### Third party licenses
 
-Libraries used by **ex-vi/spark**: [link](third-party-licenses.md)
+Libraries used by **ex-vi/spark**: [link](CREDITS.md)
